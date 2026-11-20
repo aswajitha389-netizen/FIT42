@@ -1,0 +1,173 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#101010">
+  <link rel="manifest" href="manifest.json">
+<title>FIT 42</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#101010;color:white;font-family:Arial,sans-serif;padding:20px}
+header{display:flex;justify-content:space-between;align-items:center}
+h1{font-size:28px;margin:8px 0;color:#ff4141}
+.sub{color:#999;font-size:13px}
+.card{background:#1d1d1d;padding:17px;border-radius:16px;margin:17px 0;border:1px solid #303030}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.big{font-size:25px;font-weight:bold;margin-top:8px}
+h2{font-size:18px}
+button{background:#ff4141;color:white;border:0;padding:12px;border-radius:10px;font-weight:bold}
+button:active{opacity:.7}
+input{background:#292929;color:white;border:1px solid #444;border-radius:8px;padding:12px;width:100%;margin:7px 0}
+.task{display:flex;gap:12px;align-items:center;padding:13px 0;border-bottom:1px solid #333;font-size:14px}
+.task input{width:20px;height:20px;accent-color:#ff4141}
+.muted{color:#999;font-size:13px}
+.progress{height:9px;background:#333;border-radius:20px;overflow:hidden;margin:12px 0}
+#bar{height:100%;background:#ff4141;width:0%}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px}
+button.secondary{background:#333}
+</style>
+</head>
+<body>
+<header>
+<div>
+<h1>FIT 42 🔥</h1>
+<div class="sub">YOUR FITNESS JOURNEY</div>
+</div>
+<div>🏋️</div>
+</header>
+
+<div class="card">
+<div class="muted">42 DAY CHALLENGE</div>
+<h2 id="dayTitle">DAY 1 / 42</h2>
+<div class="progress"><div id="bar"></div></div>
+<div class="row">
+<span class="muted" id="progressText">0% completed</span>
+<button onclick="nextDay()">NEXT DAY →</button>
+</div>
+</div>
+
+<div class="stats">
+<div class="card">
+<div class="muted">CURRENT WEIGHT</div>
+<div class="big" id="weightDisplay">81.5 kg</div>
+</div>
+<div class="card">
+<div class="muted">TASKS COMPLETED</div>
+<div class="big" id="taskDisplay">0 / 7</div>
+</div>
+</div>
+
+<div class="card">
+<h2>✅ DAILY CHECKLIST</h2>
+<p class="muted">Tick your tasks as you complete them.</p>
+<div id="tasks"></div>
+</div>
+
+<div class="card">
+<h2>📊 WEIGHT TRACKER</h2>
+<label class="muted">Current weight (kg)</label>
+<input type="number" id="weightInput" step="0.1" placeholder="Enter weight">
+<button onclick="saveWeight()">SAVE WEIGHT</button>
+</div>
+
+<div class="card">
+<h2>📏 WAIST TRACKER</h2>
+<label class="muted">Waist measurement (cm)</label>
+<input type="number" id="waistInput" placeholder="Enter measurement">
+<button onclick="saveWaist()">SAVE MEASUREMENT</button>
+<p class="muted" id="waistDisplay">No measurement saved yet.</p>
+</div>
+
+<div class="card">
+<h2>🎯 SIX WEEK FOCUS</h2>
+<p class="muted">Week 1 – Build consistency</p>
+<p class="muted">Week 2 – Improve routine</p>
+<p class="muted">Week 3 – Practice good technique</p>
+<p class="muted">Week 4 – Focus on recovery</p>
+<p class="muted">Week 5 – Stay consistent</p>
+<p class="muted">Week 6 – Review progress</p>
+</div>
+
+<div class="card">
+<h2>💪 REMEMBER</h2>
+<p class="muted">Consistency. Discipline. Patience.</p>
+<p class="muted">Rest is part of progress. No crash diets or extreme workouts.</p>
+</div>
+
+<script>
+const taskNames=[
+"Complete planned gym session or recovery day",
+"Walking or comfortable jogging (if scheduled)",
+"Eat balanced meals",
+"Include protein in meals",
+"Stay hydrated",
+"Get enough sleep",
+"Review progress when scheduled"
+];
+
+let day=Number(localStorage.getItem("fitday")||1);
+let data=JSON.parse(localStorage.getItem("fittasks")||"{}");
+
+function render(){
+document.getElementById("dayTitle").textContent="DAY "+day+" / 42";
+let completed=data[day]||[];
+let count=completed.filter(Boolean).length;
+document.getElementById("taskDisplay").textContent=count+" / 7";
+document.getElementById("bar").style.width=(count/7*100)+"%";
+document.getElementById("progressText").textContent=Math.round(count/7*100)+"% completed";
+document.getElementById("tasks").innerHTML=taskNames.map((name,i)=>`
+<label class="task">
+<input type="checkbox" ${completed[i]?"checked":""} onchange="toggleTask(${i},this.checked)">
+<span>${name}</span>
+</label>`).join("");
+}
+function toggleTask(i,checked){
+if(!data[day])data[day]=[];
+data[day][i]=checked;
+localStorage.setItem("fittasks",JSON.stringify(data));
+render();
+}
+function nextDay(){
+day=Math.min(42,day+1);
+localStorage.setItem("fitday",day);
+render();
+}
+function saveWeight(){
+let w=document.getElementById("weightInput").value;
+if(!w||Number(w)<=0)return alert("Enter a valid weight");
+localStorage.setItem("fitweight",w);
+showWeight();
+}
+function showWeight(){
+let w=localStorage.getItem("fitweight")||"81.5";
+document.getElementById("weightDisplay").textContent=w+" kg";
+}
+function saveWaist(){
+let w=document.getElementById("waistInput").value;
+if(!w||Number(w)<=0)return alert("Enter a valid measurement");
+localStorage.setItem("fitwaist",w);
+showWaist();
+}
+function showWaist(){
+let w=localStorage.getItem("fitwaist");
+document.getElementById("waistDisplay").textContent=w?w+" cm saved":"No measurement saved yet.";
+}
+render();
+showWeight();
+showWaist();
+</script>
+  
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js")
+      .then(() => console.log("FIT 42 offline support ready"))
+      .catch(error => console.error(error));
+  });
+}
+</script>
+
+</body>
+</html>

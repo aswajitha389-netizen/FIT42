@@ -1,0 +1,7 @@
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+<rect width="512" height="512" rx="110" fill="#101010"/>
+<path d="M110 205h292v40H110zm0 65h292v40H110z" fill="#ff4141"/>
+<text x="256" y="185" font-size="115" font-weight="bold" text-anchor="middle" fill="white">FIT</text>
+<text x="256" y="390" font-size="115" font-weight="bold" text-anchor="middle" fill="#ff4141">42</text>
+</svg>
